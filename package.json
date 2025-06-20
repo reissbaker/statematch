@@ -1,0 +1,25 @@
+{
+  "name": "statematch",
+  "version": "0.0.1",
+  "description": "Match states",
+  "main": "build/index.js",
+  "type": "module",
+  "scripts": {
+    "test": "vitest --run"
+  },
+  "author": "@reissbaker",
+  "license": "ISC",
+  "devDependencies": {
+    "typescript": "^5.8.3",
+    "vitest": "^3.2.4"
+  },
+  "files": [
+    "index.ts",
+    "index.test.ts",
+    "vitest.config.ts",
+    "README.md",
+    "package.json",
+    "tsconfig.json",
+    "/build"
+  ]
+}
