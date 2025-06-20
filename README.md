@@ -22,7 +22,8 @@ Functional match-style blocks for recovering Rust programmers.
 const value = statematch([
   [() => false, () => "first"],
   [() => true, () => "second"],
-], () => "fallback");
+  fallback(() => "fallback"),
+]);
 
 expect(value).toBe("second");
 ```
@@ -40,10 +41,31 @@ const value = statematch([
       [() => true, () => "fifth"],
     ],
   ],
-], () => "fallback");
+  fallback(() => "fallback"),
+]);
 
 expect(value).toBe("fifth");
 ```
+
+Fallbacks can also be contained inside the nested blocks:
+
+```typescript
+const value = statematch([
+  [() => false, () => "first"],
+  [() => false, () => "second"],
+  () => [
+    [() => false, () => "third"],
+    [() => false, () => "fourth"],
+    () => [
+      [() => true, () => "fifth"],
+      fallback(() => "fallback"),
+    ],
+  ],
+]);
+
+expect(value).toBe("fifth");
+```
+
 
 ## Async state matching
 
@@ -51,7 +73,8 @@ expect(value).toBe("fifth");
 const value = await asyncmatch([
   [async () => false, async () => "first"],
   [async () => true, async () => "second"],
-], async () => "fallback");
+  fallback(async () => "fallback"),
+]);
 
 expect(value).toBe("second");
 ```
@@ -69,7 +92,27 @@ const value = await asyncmatch([
       [async () => true, () => "fifth"],
     ],
   ],
-], () => "fallback");
+  fallback(() => "fallback"),
+]);
+
+expect(value).toBe("fifth");
+```
+
+Similarly, fallbacks can be contained inside the nested blocks:
+
+```typescript
+const value = await asyncmatch([
+  [async () => false, () => "first"],
+  [async () => false, () => "second"],
+  async () => [
+    [async () => false, () => "third"],
+    [async () => false, () => "fourth"],
+    async () => [
+      [async () => true, () => "fifth"],
+      fallback(() => "fallback"),
+    ],
+  ],
+]);
 
 expect(value).toBe("fifth");
 ```

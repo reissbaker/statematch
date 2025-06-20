@@ -1,12 +1,13 @@
 import { it, describe, expect } from "vitest";
-import { statematch, asyncmatch } from "./index.ts";
+import { statematch, asyncmatch, fallback } from "./index.ts";
 
 describe("statematch", () => {
   it("should match the first arm that passes", () => {
     const value = statematch([
       [() => false, () => "first"],
       [() => true, () => "second"],
-    ], () => "fallback");
+      fallback(() => "fallback"),
+    ]);
 
     expect(value).toBe("second");
   });
@@ -15,7 +16,8 @@ describe("statematch", () => {
     const value = statematch([
       [() => true, () => "first"],
       [() => true, () => "second"],
-    ], () => "fallback");
+      fallback(() => "fallback"),
+    ]);
 
     expect(value).toBe("first");
   });
@@ -24,7 +26,8 @@ describe("statematch", () => {
     const value = statematch([
       [() => false, () => "first"],
       [() => false, () => "second"],
-    ], () => "fallback");
+      fallback(() => "fallback"),
+    ]);
 
     expect(value).toBe("fallback");
   });
@@ -37,7 +40,22 @@ describe("statematch", () => {
         [() => false, () => "third"],
         [() => true, () => "fourth"],
       ],
-    ], () => "fallback");
+      fallback(() => "fallback"),
+    ]);
+
+    expect(value).toBe("fourth");
+  });
+
+  it("should allow nested functions that return fallbacks", () => {
+    const value = statematch([
+      [() => false, () => "first"],
+      [() => false, () => "second"],
+      () => [
+        [() => false, () => "third"],
+        [() => true, () => "fourth"],
+        fallback(() => "fallback"),
+      ],
+    ]);
 
     expect(value).toBe("fourth");
   });
@@ -48,16 +66,19 @@ describe("asyncmatch", () => {
     const value = await asyncmatch([
       [async () => false, () => "first"],
       [async () => true, () => "second"],
-    ], () => "fallback");
+      fallback(() => "fallback"),
+    ]);
 
     expect(value).toBe("second");
   });
+
 
   it("should not fall through to later truthy values", async () => {
     const value = await asyncmatch([
       [async () => true, () => "first"],
       [async () => true, () => "second"],
-    ], () => "fallback");
+      fallback(() => "fallback"),
+    ]);
 
     expect(value).toBe("first");
   });
@@ -66,16 +87,28 @@ describe("asyncmatch", () => {
     const value = await asyncmatch([
       [async () => false, () => "first"],
       [async () => false, () => "second"],
-    ], () => "fallback");
+      fallback(() => "fallback"),
+    ]);
 
     expect(value).toBe("fallback");
+  });
+
+  it("should allow async fallbacks", async () => {
+    const value = await asyncmatch([
+      [async () => false, () => "first"],
+      [async () => true, () => "second"],
+      fallback(async () => "fallback"),
+    ]);
+
+    expect(value).toBe("second");
   });
 
   it("should allow async arms", async () => {
     const value = await asyncmatch([
       [async () => false, async () => "first"],
       [async () => true, async () => "second"],
-    ], async () => "fallback");
+      fallback(async () => "fallback"),
+    ]);
 
     expect(value).toBe("second");
   });
@@ -88,7 +121,8 @@ describe("asyncmatch", () => {
         [async () => false, () => "third"],
         [async () => true, () => "fourth"],
       ],
-    ], () => "fallback");
+      fallback(() => "fallback"),
+    ]);
 
     expect(value).toBe("fourth");
   });
@@ -101,7 +135,22 @@ describe("asyncmatch", () => {
         [async () => false, () => "third"],
         [async () => true, () => "fourth"],
       ],
-    ], () => "fallback");
+      fallback(() => "fallback"),
+    ]);
+
+    expect(value).toBe("fourth");
+  });
+
+  it("should allow nested functions to return fallbacks", async () => {
+    const value = await asyncmatch([
+      [async () => false, () => "first"],
+      [async () => false, () => "second"],
+      () => [
+        [async () => false, () => "third"],
+        [async () => true, () => "fourth"],
+        fallback(() => "fallback"),
+      ],
+    ]);
 
     expect(value).toBe("fourth");
   });
