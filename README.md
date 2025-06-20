@@ -27,6 +27,24 @@ const value = statematch([
 expect(value).toBe("second");
 ```
 
+### Nested blocks
+
+```typescript
+const value = statematch([
+  [() => false, () => "first"],
+  [() => false, () => "second"],
+  () => [
+    [() => false, () => "third"],
+    [() => false, () => "fourth"],
+    () => [
+      [() => true, () => "fifth"],
+    ],
+  ],
+], () => "fallback");
+
+expect(value).toBe("fifth");
+```
+
 ## Async state matching
 
 ```typescript
@@ -36,4 +54,22 @@ const value = await asyncmatch([
 ], async () => "fallback");
 
 expect(value).toBe("second");
+```
+
+### Nested blocks
+
+```typescript
+const value = await asyncmatch([
+  [async () => false, () => "first"],
+  [async () => false, () => "second"],
+  async () => [
+    [async () => false, () => "third"],
+    [async () => false, () => "fourth"],
+    async () => [
+      [async () => true, () => "fifth"],
+    ],
+  ],
+], () => "fallback");
+
+expect(value).toBe("fifth");
 ```
