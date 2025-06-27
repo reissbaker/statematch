@@ -3,6 +3,16 @@ class Fallback<R> {
 }
 export function fallback<R>(value: () => R) { return () => new Fallback(value()); }
 
+class Guarded<G> {
+  constructor(private readonly guard: () => G) {}
+  run<R>(arm: () => R): [ () => G, () => R ] {
+    return [ this.guard, arm ];
+  }
+}
+export function guard<G>(guardFn: () => G) {
+  return new Guarded(guardFn);
+}
+
 type BaseMatchArm<R> = [ () => boolean, () => R ];
 type MatchArms<R> = Array<BaseMatchArm<R> | (() => MatchArms<R>)>
 type WithFinal<R> = [...MatchArms<R>, () => Fallback<R> | WithFinal<R>];

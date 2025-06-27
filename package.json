@@ -1,6 +1,6 @@
 {
   "name": "statematch",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "Match states",
   "main": "build/index.js",
   "type": "module",

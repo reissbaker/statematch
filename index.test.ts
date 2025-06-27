@@ -1,5 +1,5 @@
 import { it, describe, expect } from "vitest";
-import { statematch, asyncmatch, fallback } from "./index.ts";
+import { statematch, asyncmatch, fallback, guard } from "./index.ts";
 
 describe("statematch", () => {
   it("should match the first arm that passes", () => {
@@ -53,6 +53,20 @@ describe("statematch", () => {
       () => [
         [() => false, () => "third"],
         [() => true, () => "fourth"],
+        fallback(() => "fallback"),
+      ],
+    ]);
+
+    expect(value).toBe("fourth");
+  });
+
+  it("should work with guard syntax", () => {
+    const value = statematch([
+      guard(() => false).run(() => "first"),
+      guard(() => false).run(() => "second"),
+      () => [
+        guard(() => false).run(() => "third"),
+        guard(() => true).run(() => "fourth"),
         fallback(() => "fallback"),
       ],
     ]);
@@ -148,6 +162,20 @@ describe("asyncmatch", () => {
       () => [
         [async () => false, () => "third"],
         [async () => true, () => "fourth"],
+        fallback(() => "fallback"),
+      ],
+    ]);
+
+    expect(value).toBe("fourth");
+  });
+
+  it("should work with guard syntax", async () => {
+    const value = await asyncmatch([
+      guard(async () => false).run(() => "first"),
+      guard(async () => false).run(() => "second"),
+      () => [
+        guard(async () => false).run(() => "third"),
+        guard(async () => true).run(() => "fourth"),
         fallback(() => "fallback"),
       ],
     ]);

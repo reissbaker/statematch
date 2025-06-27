@@ -20,8 +20,8 @@ Functional match-style blocks for recovering Rust programmers.
 
 ```typescript
 const value = statematch([
-  [() => false, () => "first"],
-  [() => true, () => "second"],
+  guard(() => false).run(() => "first"),
+  guard(() => true).run(() => "second"),
   fallback(() => "fallback"),
 ]);
 
@@ -32,13 +32,13 @@ expect(value).toBe("second");
 
 ```typescript
 const value = statematch([
-  [() => false, () => "first"],
-  [() => false, () => "second"],
+  guard(() => false).run(() => "first"),
+  guard(() => false).run(() => "second"),
   () => [
-    [() => false, () => "third"],
-    [() => false, () => "fourth"],
+    guard(() => false).run(() => "third"),
+    guard(() => false).run(() => "fourth"),
     () => [
-      [() => true, () => "fifth"],
+      guard(() => true).run(() => "fifth"),
     ],
   ],
   fallback(() => "fallback"),
@@ -51,13 +51,13 @@ Fallbacks can also be contained inside the nested blocks:
 
 ```typescript
 const value = statematch([
-  [() => false, () => "first"],
-  [() => false, () => "second"],
+  guard(() => false).run(() => "first"),
+  guard(() => false).run(() => "second"),
   () => [
-    [() => false, () => "third"],
-    [() => false, () => "fourth"],
+    guard(() => false).run(() => "third"),
+    guard(() => false).run(() => "fourth"),
     () => [
-      [() => true, () => "fifth"],
+      guard(() => true).run(() => "fifth"),
       fallback(() => "fallback"),
     ],
   ],
@@ -71,8 +71,8 @@ expect(value).toBe("fifth");
 
 ```typescript
 const value = await asyncmatch([
-  [async () => false, async () => "first"],
-  [async () => true, async () => "second"],
+  guard(async () => false).run(async () => "first"),
+  guard(async () => true).run(async () => "second"),
   fallback(async () => "fallback"),
 ]);
 
@@ -83,13 +83,13 @@ expect(value).toBe("second");
 
 ```typescript
 const value = await asyncmatch([
-  [async () => false, () => "first"],
-  [async () => false, () => "second"],
+  guard(async () => false).run(() => "first"),
+  guard(async () => false).run(() => "second"),
   async () => [
-    [async () => false, () => "third"],
-    [async () => false, () => "fourth"],
+    guard(async () => false).run(() => "third"),
+    guard(async () => false).run(() => "fourth"),
     async () => [
-      [async () => true, () => "fifth"],
+      guard(async () => true).run(() => "fifth"),
     ],
   ],
   fallback(() => "fallback"),
@@ -102,13 +102,13 @@ Similarly, fallbacks can be contained inside the nested blocks:
 
 ```typescript
 const value = await asyncmatch([
-  [async () => false, () => "first"],
-  [async () => false, () => "second"],
+  guard(async () => false).run(() => "first"),
+  guard(async () => false).run(() => "second"),
   async () => [
-    [async () => false, () => "third"],
-    [async () => false, () => "fourth"],
+    guard(async () => false).run(() => "third"),
+    guard(async () => false).run(() => "fourth"),
     async () => [
-      [async () => true, () => "fifth"],
+      guard(async () => true).run(() => "fifth"),
       fallback(() => "fallback"),
     ],
   ],
